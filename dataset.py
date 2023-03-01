@@ -137,6 +137,7 @@ def image_data_augmentation(mat, w, h, pleft, ptop, swidth, sheight, flip, dhue,
             if img.shape[2] >= 3:
                 hsv_src = cv2.cvtColor(sized.astype(np.float32), cv2.COLOR_RGB2HSV)  # RGB to HSV
                 hsv = cv2.split(hsv_src)
+                hsv = list(hsv)
                 hsv[1] *= dsat
                 hsv[2] *= dexp
                 hsv[0] += 179 * dhue
@@ -377,12 +378,10 @@ class Yolo_dataset(Dataset):
                 # print(img_path)
         if use_mixup == 3:
             out_bboxes = np.concatenate(out_bboxes, axis=0)
-        out_bboxes1 = np.zeros([self.cfg.boxes, 5])
-        try:
-            out_bboxes1[:min(out_bboxes.shape[0], self.cfg.boxes)] = out_bboxes[:min(out_bboxes.shape[0], self.cfg.boxes)]
-        except AttributeError:
-            out_bboxes = np.array(out_bboxes.astype(object), dtype=np.float32)
-            out_bboxes1[:min(out_bboxes.shape[0], self.cfg.boxes)] = out_bboxes[:min(out_bboxes.shape[0], self.cfg.boxes)]
+        out_bboxes1 = np.zeros([self.cfg.boxes, 5]
+        out_bboxes = np.asarray(out_bboxes)
+        out_bboxes = np.array(out_bboxes.astype(object), dtype=np.float32)
+        out_bboxes1[:min(out_bboxes.shape[0], self.cfg.boxes)] = out_bboxes[:min(out_bboxes.shape[0], self.cfg.boxes)]
         return out_img, out_bboxes1
 
 
